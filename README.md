@@ -70,11 +70,11 @@ The duration of your instant replay buffer in seconds.
 ---
 ##### Permission<br />
 Determines who has access to requesting a replay from chat.
-- **default**: everyone
-- moderator
-- subscriber
-- user_specific
-- editor
+- **default**: `everyone`
+- `moderator`
+- `subscriber`
+- `user_specific`
+- `editor`
 
 ##### Trigger Threshold<br />
 How many users need to request a replay within 30 second window to trigger a replay?
