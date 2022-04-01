@@ -7,6 +7,13 @@
       "tooltip": "The command that triggers the instant replay",
       "group": "Basic Settings"
     },
+    "AlertChat": {
+      "type": "checkbox",
+      "value": true,
+      "label": "Alert chat everytime someone uses the command.",
+      "tooltip": "To inform viewers how close they are to meeting the threshold.",
+      "group": "Basic Settings"
+    },
     "Hotkey": {
       "type": "textbox",
       "value": "F12",
@@ -14,9 +21,16 @@
       "tooltip": "The hotkey that triggers the instant replay",
       "group": "OBS Settings"
     },
+    "BaseScene": {
+      "type": "textbox",
+      "value": "Destiny 2",
+      "label": "Base Scene",
+      "tooltip": "The name of the original scene on OBS",
+      "group": "OBS Settings"
+    },
     "InstantReplayScene": {
       "type": "textbox",
-      "value": "Destiny 2 (Instant Replay)",
+      "value": "Destiny 2 (Replay Display)",
       "label": "Instant Replay Scene",
       "tooltip": "The name of the instant replay scene on OBS",
       "group": "OBS Settings"
