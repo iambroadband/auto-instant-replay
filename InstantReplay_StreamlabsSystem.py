@@ -25,7 +25,7 @@ ScriptName = "Auto Instant Replay"
 Website = "https://www.twitch.tv/iBroadband"
 Description = "Chatters use !replay to request an instant replay"
 Creator = "iBroadband"
-Version = "1.0.3"
+Version = "1.0.4"
 
 #---------------------------
 #   Define Global Variables
@@ -143,15 +143,15 @@ def UpdateInstantReplayRequestCount():
         InstantReplayRequestCount = 0
         #Parent.SendStreamMessage("At least " + str(int(ScriptSettings.Threshold)) + " requested an instant replay. Generating it now!")
 
-        # Save replay buffer
+        # Save replay buffer, wait for save to finish.
         StrikeKey(UserHotkey)
-        time.sleep(1.5)
+        time.sleep(5)
 
         # Switch to the instant replay OBS scene
         # Wait for ReplayDuration (2 second buffer time for transitions, adjust accordingly)
         # Return to the original OBS scene
-        ChangeSceneTimed(ScriptSettings.InstantReplayScene, int(ScriptSettings.ReplayDuration - 2))
-    else:
+        ChangeSceneTimed(ScriptSettings.InstantReplayScene, int(ScriptSettings.ReplayDuration - 2), ScriptSettings.BaseScene)
+    elif ScriptSettings.AlertChat: 
         Parent.SendStreamMessage(str(InstantReplayRequestCount) + " viewers have requested an instant replay. Need " + str(int(ScriptSettings.Threshold)) + " to generate it!")
 
     MostRecentRequest = datetime.now()
