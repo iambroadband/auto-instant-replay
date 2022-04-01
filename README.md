@@ -2,7 +2,7 @@
 
 <sub><sup>This is a Python script meant for use with [Streamlabs Chatbot](https://streamlabs.com/content-hub/support/chatbot-and-cloudbot).</sup></sub>
 ### Author: iBroadband
-##### Script Version: 1.0.3
+##### Script Version: 1.0.4
 
 
 ## Where to Find Me
@@ -43,6 +43,11 @@ You'll want to use this script if you are looking for a way to allow your viewer
 ##### Command
 The chat command your viewers can use to request a replay.
 - **default**: `!replay`
+
+##### Alert Chat
+True/False flag for informing chat about the status of the request.
+- **default**: `True` (bot will update chat with request count and threshold)
+- `False` (bot will not update chat)
 <br />
 
 ### OBS Settings
@@ -54,9 +59,14 @@ The hotkey you use to switch to your instant replay scene in OBS.
 - Features support for [~all~ most MSDN virtual keys](https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes). Case insensitive.
 - **default**: F12
 
+##### Base Scene
+The name of the scene you want to switch from.
+- **default**: Destiny 2, sorry I play a bad game 😕
+- Case sensitive!
+
 ##### Instant Replay Scene
 The name of the scene that you want to switch to.
-- **default**: Destiny 2 (Replay Display), sorry I play a bad game 😕
+- **default**: Destiny 2 (Replay Display)
 - Case sensitive!
 
 ##### Replay Duration
@@ -70,11 +80,11 @@ The duration of your instant replay buffer in seconds.
 ---
 ##### Permission<br />
 Determines who has access to requesting a replay from chat.
-- **default**: `everyone`
-- `moderator`
-- `subscriber`
-- `user_specific`
-- `editor`
+- **default**: everyone
+- moderator
+- subscriber
+- user_specific
+- editor
 
 ##### Trigger Threshold<br />
 How many users need to request a replay within 30 second window to trigger a replay?
@@ -90,6 +100,7 @@ none, it's perfect 😎
 
 - Planned improvement: add a setting for window size in case users want shorter or longer windows to allow for requests.
 - Planned improvement: add a setting to allow streamers to turn off the message the bot sends to chat when someone uses the command.
+
 
 If you're a developer, feel free to fork this repo or make a pull request. <br />
 If you're not a developer, but you find a problem or have a feature request, please contact me!
