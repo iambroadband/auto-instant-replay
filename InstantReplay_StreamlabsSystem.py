@@ -1,0 +1,237 @@
+#---------------------------
+#   Import Libraries
+#---------------------------
+import os
+import sys
+import json
+import time
+from datetime import datetime
+sys.path.append(os.path.join(os.path.dirname(__file__), "lib")) #point at lib folder for classes / references
+
+import clr
+clr.AddReference("IronPython.SQLite.dll")
+clr.AddReference("IronPython.Modules.dll")
+
+#   Import your Settings class
+from Settings_Module import MySettings
+
+#   Import VK class
+from Keyboard_Module import VK, StrikeKey
+
+#---------------------------
+#   Script Information
+#---------------------------
+ScriptName = "Auto Instant Replay"
+Website = "https://www.twitch.tv/iBroadband"
+Description = "Chatters use !replay to request an instant replay"
+Creator = "iBroadband"
+Version = "1.0.3"
+
+#---------------------------
+#   Define Global Variables
+#---------------------------
+global SettingsFile
+global ScriptSettings
+global InstantReplayRequestCount
+global BridgeApp
+global MostRecentRequest
+global VK
+global UserHotkey
+
+SettingsFile = ""
+ScriptSettings = MySettings()
+InstantReplayRequestCount = 0
+BridgeApp = os.path.join(os.path.dirname(__file__), "bridge\\SLOBSRC.exe")
+MostRecentRequest = datetime.now()
+VK = VK()
+UserHotkey = VK.F12
+
+#---------------------------
+#   Initialize Data (Only called on load)
+#---------------------------
+def Init():
+    #   Create Settings Directory
+    directory = os.path.join(os.path.dirname(__file__), "Settings")
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    #   Load settings
+    SettingsFile = os.path.join(os.path.dirname(__file__), "Settings\settings.json")
+    ScriptSettings = MySettings(SettingsFile)
+
+    #   Initialize Instant Replay params
+    InstantReplayRequestCount = 0
+    MostRecentRequest = datetime.now()
+    UserHotkey = ParseUserHotkey(ScriptSettings.Hotkey)
+
+    return
+
+#---------------------------
+#   Execute Data / Process messages
+#---------------------------
+def Execute(data):
+    if (    data.IsChatMessage() and
+            data.GetParam(0).lower() == ScriptSettings.Command and
+            Parent.IsOnUserCooldown(ScriptName,ScriptSettings.Command,data.User)):
+        Parent.SendStreamWhisper(data.User, "!replay Cooldown: " + str(Parent.GetUserCooldownDuration(ScriptName,ScriptSettings.Command,data.User)))
+
+    #   Check if the proper command is used, the command is not on cooldown and the user has permission to use the command
+    if (    data.IsChatMessage() and
+            data.GetParam(0).lower() == ScriptSettings.Command and
+            not Parent.IsOnUserCooldown(ScriptName,ScriptSettings.Command,data.User) and
+            Parent.HasPermission(data.User,ScriptSettings.Permission,"instant-replay")):
+        Parent.BroadcastWsEvent("EVENT_MINE","{'show':false}")
+        UpdateInstantReplayRequestCount()
+        Parent.AddUserCooldown(ScriptName,ScriptSettings.Command,data.User,ScriptSettings.UserCooldown)  # Put the command on cooldown
+
+    return
+
+#---------------------------
+#   Tick method
+#---------------------------
+def Tick():
+    return
+
+#---------------------------
+#   Parse method
+#---------------------------
+def Parse(parseString, userid, username, targetid, targetname, message):
+    return parseString
+
+#---------------------------
+#   Reload Settings
+#---------------------------
+def ReloadSettings(jsonData):
+    # Execute json reloading here
+    ScriptSettings.__dict__ = json.loads(jsonData)
+    ScriptSettings.Save(SettingsFile)
+
+    # Parse hotkey
+    UserHotkey = ParseUserHotkey(ScriptSettings.Hotkey)
+
+    return
+
+#---------------------------
+#   Unload
+#---------------------------
+def Unload():
+    return
+
+#---------------------------
+#   ScriptToggled
+#---------------------------
+def ScriptToggled(state):
+    return
+
+#---------------------------
+#   UpdateInstantReplayRequestCount (Manages instant-replay behavior)
+#---------------------------
+def UpdateInstantReplayRequestCount():
+    global InstantReplayRequestCount
+    global MostRecentRequest
+    global UserHotkey
+
+    # Reset request count if too few requests within window
+    window = datetime.now()-MostRecentRequest
+    if window.total_seconds() > ScriptSettings.UserCooldown:
+        InstantReplayRequestCount = 1
+    else:
+        InstantReplayRequestCount += 1
+
+    if InstantReplayRequestCount >= ScriptSettings.Threshold:
+        # Reset instant replay
+        InstantReplayRequestCount = 0
+        #Parent.SendStreamMessage("At least " + str(int(ScriptSettings.Threshold)) + " requested an instant replay. Generating it now!")
+
+        # Save replay buffer
+        StrikeKey(UserHotkey)
+        time.sleep(1.5)
+
+        # Switch to the instant replay OBS scene
+        # Wait for ReplayDuration (2 second buffer time for transitions, adjust accordingly)
+        # Return to the original OBS scene
+        ChangeSceneTimed(ScriptSettings.InstantReplayScene, int(ScriptSettings.ReplayDuration - 2))
+    else:
+        Parent.SendStreamMessage(str(InstantReplayRequestCount) + " viewers have requested an instant replay. Need " + str(int(ScriptSettings.Threshold)) + " to generate it!")
+
+    MostRecentRequest = datetime.now()
+    return
+
+#---------------------------
+#   ParseUserHotkey (Maps the user's hotkey to a Value Key)
+#---------------------------
+def ParseUserHotkey(hotkey):
+    # Default hotkey is F12
+    attr = next((key for key in vars(VK).keys() if key.upper() == ScriptSettings.Hotkey.upper()), 'F12')
+    return getattr(VK, attr)
+
+
+#---------------------------------------
+#   SLOBS Functions - created by ocgineer
+#---------------------------------------
+def Logger(response):
+    """ Logs response from bridge app in scripts logger. """
+    if response:
+        Parent.Log(ScriptName, response)
+    return
+
+def ChangeScene(scene, delay=None):
+    """ Change to scene. """
+    if delay:
+        Logger(os.popen("{0} change_scene \"{1}\" {2}".format(BridgeApp, scene, delay)).read())
+    else:
+        Logger(os.popen("{0} change_scene \"{1}\"".format(BridgeApp, scene)).read())
+    return
+
+def ChangeSceneTimed(scene, delay, returnscene=None):
+    """ Swap to scene and then back or to optional given scene. """
+    if returnscene:
+        Logger(os.popen("{0} swap_scenes \"{1}\" {2} \"{3}\"".format(BridgeApp, scene, delay, returnscene)).read())
+    else:
+        Logger(os.popen("{0} swap_scenes \"{1}\" {2}".format(BridgeApp, scene, delay)).read())
+    return
+
+def SetSourceVisibility(source, visibility, scene=None):
+    """ Set the visibility of a source optionally in a targeted scene. """
+    if scene:
+        Logger(os.popen("{0} visibility_source_scene \"{1}\" \"{2}\" {3}".format(BridgeApp, source, scene, visibility)).read())
+    else:
+        Logger(os.popen("{0} visibility_source_active \"{1}\" {2}".format(BridgeApp, source, visibility)).read())
+    return
+
+def SetSourceVisibilityTimed(source, mode, delay, scene=None):
+    """ Set the visibility of a source timed optionally in a targeted scene. """
+    if scene:
+        Logger(os.popen("{0} tvisibility_source_scene \"{1}\" \"{2}\" {3} {4}".format(BridgeApp, source, scene, delay, mode)).read())
+    else:
+        Logger(os.popen("{0} tvisibility_source_active \"{1}\" {2} {3}".format(BridgeApp, source, delay, mode)).read())
+    return
+
+def SetFolderVisibility(folder, visibility, scene=None):
+    """ Set the visibility of a folder optinally in a targeted scene. """
+    Parent.Log("functest", "{0} and {1} on {2}".format(folder, visibility, scene))
+    if scene:
+        Logger(os.popen("{0} visibility_folder_scene \"{1}\" \"{2}\" {3}".format(BridgeApp, folder, scene, visibility)).read())
+    else:
+        Logger(os.popen("{0} visibility_folder_active \"{1}\" {2}".format(BridgeApp, folder, visibility)).read())
+    return
+
+def SetFolderVisibilityTimed(folder, mode, delay, scene=None):
+    """ Set the visibility of a folder timed optionally in a targeted scene. """
+    if scene:
+        Logger(os.popen("{0} tvisibility_folder_scene \"{1}\" \"{2}\" {3} {4}".format(BridgeApp, folder, scene, delay, mode)).read())
+    else:
+        Logger(os.popen("{0} tvisibility_folder_active \"{1}\" {2} {3}".format(BridgeApp, folder, delay, mode)).read())
+    return
+
+def SaveReplaySwap(scene, offset=None):
+    """ Save the replay and swap to a given "replay" scene. """
+    if offset:
+        Logger(os.popen("{0} save_replaybuffer_swap \"{1}\" {2}".format(BridgeApp, scene, offset)).read())
+    else:
+        Logger(os.popen("{0} save_replaybuffer_swap \"{1}\"".format(BridgeApp, scene)).read())
+    return
+
+def ThreadedFunction(command):
+    Logger(os.popen("{0} {1}".format(BridgeApp, command)).read())
+    return

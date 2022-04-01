@@ -1,0 +1,62 @@
+{
+    "output_file": "Settings/settings.json",
+    "Command": {
+      "type": "textbox",
+      "value": "!replay",
+      "label": "Command",
+      "tooltip": "The command that triggers the instant replay",
+      "group": "Basic Settings"
+    },
+    "Hotkey": {
+      "type": "textbox",
+      "value": "F12",
+      "label": "OBS Replay Hotkey",
+      "tooltip": "The hotkey that triggers the instant replay",
+      "group": "OBS Settings"
+    },
+    "InstantReplayScene": {
+      "type": "textbox",
+      "value": "Destiny 2 (Instant Replay)",
+      "label": "Instant Replay Scene",
+      "tooltip": "The name of the instant replay scene on OBS",
+      "group": "OBS Settings"
+    },
+    "ReplayDuration": {
+      "type": "slider",
+      "value": 30,
+      "min": 1,
+      "max": 60,
+      "ticks": 1,
+      "label": "Replay Duration (seconds)",
+      "tooltip": "How long each instant replay will be",
+      "group": "OBS Settings"
+    },
+    "Permission": {
+      "type": "dropdown",
+      "value": "everyone",
+      "items": ["everyone","moderator","subscriber","user_specific","editor"],
+      "label": "Permission",
+      "tooltip": "Who is able to use the command",
+      "group": "Viewer Settings"
+    },
+    "Threshold": {
+      "type": "slider",
+      "value": 3,
+      "min": 0,
+      "max": 100,
+      "ticks": 1,
+      "label": "Trigger Threshold (# Users)",
+      "tooltip": "# of users required to trigger instant replay",
+      "group": "Viewer Settings"
+    },
+    "UserCooldown": {
+      "type": "slider",
+      "value": 60,
+      "min": 0,
+      "max": 600,
+      "ticks": 10,
+      "label": "User Cooldown (seconds)",
+      "tooltip": "How long the command should go on cooldown for the user",
+      "group": "Viewer Settings"
+    }
+  }
