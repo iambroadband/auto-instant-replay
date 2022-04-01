@@ -23,7 +23,7 @@ You'll want to use this script if you are looking for a way to allow your viewer
 ## Installation
 1. Download as [a .ZIP](https://github.com/iBroadband/auto-instant-replay/archive/refs/heads/main.zip)
 2. Extract to your local scripts folder (e.g. `C:\Users\iBroadband\AppData\Roaming\Streamlabs\Streamlabs Chatbot\Services\Scripts`)
-3. Open Streamlabs Chatbot and go to the Scripts tab. Right click > Reload Scripts
+3. Open Streamlabs Chatbot and go to the Scripts tab. `Right Click > Reload Scripts`
 
 
 ## Setup
