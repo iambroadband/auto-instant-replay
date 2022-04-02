@@ -99,7 +99,6 @@ How long before an individual user is allowed to request a replay again?
 none, it's perfect 😎
 
 - Planned improvement: add a setting for window size in case users want shorter or longer windows to allow for requests.
-- Planned improvement: add a setting to allow streamers to turn off the message the bot sends to chat when someone uses the command.
 
 
 If you're a developer, feel free to fork this repo or make a pull request. <br />
