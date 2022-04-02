@@ -2,7 +2,7 @@
 
 <sub><sup>This is a Python script meant for use with [Streamlabs Chatbot](https://streamlabs.com/content-hub/support/chatbot-and-cloudbot).</sup></sub>
 ### Author: iBroadband
-##### Script Version: 1.0.4
+##### Script Version: 1.0.7
 
 
 ## Where to Find Me
@@ -56,7 +56,7 @@ True/False flag for informing chat about the status of the request.
 ---
 ##### OBS Replay Hotkey
 The hotkey you use to switch to your instant replay scene in OBS.
-- e.g.: `F12`, `Home`, `Backspace`, `Esc`, `a`, `b`, `c`, `1`, `2`, `3`
+- e.g.: `F12`, `Home`, `Backspace`, `Esc`, `Caps Lock`, `a`, `num 1`, `Left Shift`
 - Features support for [~all~ most MSDN virtual keys](https://docs.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes). Case insensitive.
 - **default**: F12
 
