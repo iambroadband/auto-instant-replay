@@ -10,8 +10,8 @@
     "AlertChat": {
       "type": "checkbox",
       "value": true,
-      "label": "Alert chat everytime someone uses the command.",
-      "tooltip": "To inform viewers how close they are to meeting the threshold.",
+      "label": "Update chat with replay progress.",
+      "tooltip": "To inform viewers how close they are to meeting the threshold",
       "group": "Basic Settings"
     },
     "Hotkey": {
