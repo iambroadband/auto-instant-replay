@@ -10,7 +10,9 @@ class MySettings(object):
 		except:
 			#   Default Settings
 			self.Command = "!replay"
+			self.AlertChat = True
 			self.Hotkey = "F12"
+			self.BaseScene = "Destiny 2"
 			self.InstantReplayScene = "Destiny 2 (Replay Display)"
 			self.ReplayDuration = 30
 			self.Permission = "everyone"
