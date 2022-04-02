@@ -25,7 +25,7 @@ ScriptName = "Auto Instant Replay"
 Website = "https://www.twitch.tv/iBroadband"
 Description = "Chatters use !replay to request an instant replay"
 Creator = "iBroadband"
-Version = "1.0.4"
+Version = "1.0.7"
 
 #---------------------------
 #   Define Global Variables
@@ -44,7 +44,7 @@ InstantReplayRequestCount = 0
 BridgeApp = os.path.join(os.path.dirname(__file__), "bridge\\SLOBSRC.exe")
 MostRecentRequest = datetime.now()
 VK = VK()
-UserHotkey = VK.F12
+UserHotkey = VK.f12
 
 #---------------------------
 #   Initialize Data (Only called on load)
@@ -82,7 +82,7 @@ def Execute(data):
             Parent.HasPermission(data.User,ScriptSettings.Permission,"instant-replay")):
         Parent.BroadcastWsEvent("EVENT_MINE","{'show':false}")
         UpdateInstantReplayRequestCount()
-        Parent.AddUserCooldown(ScriptName,ScriptSettings.Command,data.User,ScriptSettings.UserCooldown)  # Put the command on cooldown
+        #Parent.AddUserCooldown(ScriptName,ScriptSettings.Command,data.User,ScriptSettings.UserCooldown)  # Put the command on cooldown
 
     return
 
@@ -131,39 +131,52 @@ def UpdateInstantReplayRequestCount():
     global MostRecentRequest
     global UserHotkey
 
-    # Reset request count if too few requests within window
-    window = datetime.now()-MostRecentRequest
+    if InstantReplayRequestCount == 0:
+        # Save replay buffer
+        SaveReplay()
+
+    # Reset request count if too few requests within window, start new set of requests
+    window = datetime.now() - MostRecentRequest
     if window.total_seconds() > ScriptSettings.UserCooldown:
         InstantReplayRequestCount = 1
+        # Save replay buffer
+        SaveReplay()
     else:
         InstantReplayRequestCount += 1
 
+    # Have enough people requested a replay?
     if InstantReplayRequestCount >= ScriptSettings.Threshold:
         # Reset instant replay
         InstantReplayRequestCount = 0
-        #Parent.SendStreamMessage("At least " + str(int(ScriptSettings.Threshold)) + " requested an instant replay. Generating it now!")
-
-        # Save replay buffer, wait for save to finish.
-        StrikeKey(UserHotkey)
-        time.sleep(5)
+        #Parent.SendStreamMessage("Here comes the instant replay!")
 
         # Switch to the instant replay OBS scene
         # Wait for ReplayDuration (2 second buffer time for transitions, adjust accordingly)
         # Return to the original OBS scene
         ChangeSceneTimed(ScriptSettings.InstantReplayScene, int(ScriptSettings.ReplayDuration - 2), ScriptSettings.BaseScene)
-    elif ScriptSettings.AlertChat: 
-        Parent.SendStreamMessage(str(InstantReplayRequestCount) + " viewers have requested an instant replay. Need " + str(int(ScriptSettings.Threshold)) + " to generate it!")
 
     MostRecentRequest = datetime.now()
     return
 
 #---------------------------
-#   ParseUserHotkey (Maps the user's hotkey to a Value Key)
+#   ParseUserHotkey (Maps the user's hotkey to a Virtual Key)
 #---------------------------
 def ParseUserHotkey(hotkey):
     # Default hotkey is F12
-    attr = next((key for key in vars(VK).keys() if key.upper() == ScriptSettings.Hotkey.upper()), 'F12')
-    return getattr(VK, attr)
+    if hotkey in VK.symbol:
+        return VK.symbol.get(hotkey)
+    else:
+        return getattr(VK, hotkey.replace(' ', '_').lower(), VK.f12)
+
+#---------------------------
+#   SaveReplay (Press the UserHotkey and wait for the replay to save)
+#---------------------------
+def SaveReplay(delay = 5):
+    StrikeKey(UserHotkey)
+    time.sleep(delay)
+
+    if ScriptSettings.AlertChat:
+        Parent.SendStreamMessage("Need " + str(int(ScriptSettings.Threshold)) + " chatters to send " + ScriptSettings.Command + " to show an instant replay.")
 
 
 #---------------------------------------
