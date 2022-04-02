@@ -31,6 +31,7 @@ You'll want to use this script if you are looking for a way to allow your viewer
 2. Make sure you have a hotkey assigned that switches to your replay scene.
 3. In `Script Settings > OBS Settings` update the following:
     - `OBS Replay Hotkey`
+    - `Base Scene`
     - `Instant Replay Scene`
     - `Replay Duration`
 4. The default settings will work out of the box for the rest. Adjust them as needed.
