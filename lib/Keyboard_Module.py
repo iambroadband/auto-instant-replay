@@ -1,5 +1,5 @@
 #---------------------------------------
-#   Keyboard Functions (https://stackoverflow.com/a/62323912)
+# Keyboard Functions (https://stackoverflow.com/a/62323912)
 #---------------------------------------
 
 from ctypes_key import PressKey, ReleaseKey
