@@ -2,7 +2,7 @@
 
 <sub><sup>This is a Python script meant for use with [Streamlabs Chatbot](https://streamlabs.com/content-hub/support/chatbot-and-cloudbot).</sup></sub>
 ### Author: iBroadband
-##### Script Version: 1.0.7
+##### Script Version: 1.0.8
 
 
 ## Where to Find Me
@@ -49,6 +49,10 @@ The chat command your viewers can use to request a replay.
 True/False flag for informing chat about the status of the request.
 - **default**: `True` (bot will update chat with request count and threshold)
 - `False` (bot will not update chat)
+
+##### Command Cooldown
+How long before this command is allowed to request a replay again?
+- **default**: 60 seconds
 <br />
 
 ### OBS Settings
