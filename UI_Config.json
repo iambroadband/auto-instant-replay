@@ -14,6 +14,16 @@
       "tooltip": "To inform viewers how close they are to meeting the threshold",
       "group": "Basic Settings"
     },
+    "Cooldown": {
+      "type": "slider",
+      "value": 60,
+      "min": 30,
+      "max": 600,
+      "ticks": 30,
+      "label": "Command Cooldown (seconds)",
+      "tooltip": "How often a replay can be generated",
+      "group": "Basic Settings"
+    },
     "Hotkey": {
       "type": "textbox",
       "value": "F12",
