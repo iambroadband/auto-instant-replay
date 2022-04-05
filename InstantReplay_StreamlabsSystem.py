@@ -1,5 +1,5 @@
 #---------------------------
-#   Import Libraries
+# Import Libraries
 #---------------------------
 import os
 import sys
@@ -12,23 +12,23 @@ import clr
 clr.AddReference("IronPython.SQLite.dll")
 clr.AddReference("IronPython.Modules.dll")
 
-#   Import your Settings class
+# Import your Settings class
 from Settings_Module import MySettings
 
-#   Import VK class
+# Import VK class
 from Keyboard_Module import VK, StrikeKey
 
 #---------------------------
-#   Script Information
+# Script Information
 #---------------------------
 ScriptName = "Auto Instant Replay"
 Website = "https://www.twitch.tv/iBroadband"
 Description = "Chatters use !replay to request an instant replay"
 Creator = "iBroadband"
-Version = "1.0.7"
+Version = "1.0.8"
 
 #---------------------------
-#   Define Global Variables
+# Define Global Variables
 #---------------------------
 global SettingsFile
 global ScriptSettings
@@ -47,7 +47,7 @@ VK = VK()
 UserHotkey = VK.f12
 
 #---------------------------
-#   Initialize Data (Only called on load)
+# Initialize Data (Only called on load)
 #---------------------------
 def Init():
     #   Create Settings Directory
@@ -55,11 +55,11 @@ def Init():
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    #   Load settings
+    # Load settings
     SettingsFile = os.path.join(os.path.dirname(__file__), "Settings\settings.json")
     ScriptSettings = MySettings(SettingsFile)
 
-    #   Initialize Instant Replay params
+    # Initialize Instant Replay params
     InstantReplayRequestCount = 0
     MostRecentRequest = datetime.now()
     UserHotkey = ParseUserHotkey(ScriptSettings.Hotkey)
@@ -67,39 +67,47 @@ def Init():
     return
 
 #---------------------------
-#   Execute Data / Process messages
+# Execute Data / Process messages
 #---------------------------
 def Execute(data):
-    if (    data.IsChatMessage() and
-            data.GetParam(0).lower() == ScriptSettings.Command and
-            Parent.IsOnUserCooldown(ScriptName,ScriptSettings.Command,data.User)):
-        Parent.SendStreamWhisper(data.User, "!replay Cooldown: " + str(Parent.GetUserCooldownDuration(ScriptName,ScriptSettings.Command,data.User)))
 
-    #   Check if the proper command is used, the command is not on cooldown and the user has permission to use the command
-    if (    data.IsChatMessage() and
-            data.GetParam(0).lower() == ScriptSettings.Command and
-            not Parent.IsOnUserCooldown(ScriptName,ScriptSettings.Command,data.User) and
-            Parent.HasPermission(data.User,ScriptSettings.Permission,"instant-replay")):
-        Parent.BroadcastWsEvent("EVENT_MINE","{'show':false}")
-        UpdateInstantReplayRequestCount()
-        #Parent.AddUserCooldown(ScriptName,ScriptSettings.Command,data.User,ScriptSettings.UserCooldown)  # Put the command on cooldown
+    #   Check if the incoming message is a command
+    if (data.IsChatMessage() and
+        data.GetParam(0).lower() == ScriptSettings.Command):
+
+        # User is on cooldown
+        if (Parent.IsOnUserCooldown(ScriptName, ScriptSettings.Command, data.User)):
+            Parent.SendStreamWhisper(data.User, "!replay Cooldown: " + str(Parent.GetUserCooldownDuration(ScriptName,ScriptSettings.Command,data.User)))
+
+        # Command is on cooldown
+        if (Parent.IsOnCooldown(ScriptName, ScriptSettings.Command)):
+            #if (ScriptSettings.AlertChat):
+                #Parent.SendStreamMessage(ScriptSettings.Command + " is on cooldown.")
+            pass
+
+        # Command is ready to go
+        if (not Parent.IsOnUserCooldown(ScriptName, ScriptSettings.Command, data.User) and
+            not Parent.IsOnCooldown(ScriptName, ScriptSettings.Command) and
+            Parent.HasPermission(data.User, ScriptSettings.Permission, "instant-replay")):
+            UpdateInstantReplayRequestCount()
+            Parent.AddUserCooldown(ScriptName,ScriptSettings.Command,data.User,ScriptSettings.UserCooldown)  # Put the command on cooldown
 
     return
 
 #---------------------------
-#   Tick method
+# Tick method
 #---------------------------
 def Tick():
     return
 
 #---------------------------
-#   Parse method
+# Parse method
 #---------------------------
 def Parse(parseString, userid, username, targetid, targetname, message):
     return parseString
 
 #---------------------------
-#   Reload Settings
+# Reload Settings
 #---------------------------
 def ReloadSettings(jsonData):
     # Execute json reloading here
@@ -112,25 +120,27 @@ def ReloadSettings(jsonData):
     return
 
 #---------------------------
-#   Unload
+# Unload
 #---------------------------
 def Unload():
     return
 
 #---------------------------
-#   ScriptToggled
+# ScriptToggled
 #---------------------------
 def ScriptToggled(state):
     return
 
 #---------------------------
-#   UpdateInstantReplayRequestCount (Manages instant-replay behavior)
+# UpdateInstantReplayRequestCount (Manages instant-replay behavior)
 #---------------------------
 def UpdateInstantReplayRequestCount():
+    """ Saves a replay and switches scenes for a set duration when a threshold is reached. """
     global InstantReplayRequestCount
     global MostRecentRequest
     global UserHotkey
 
+    # Brand new window of requests
     if InstantReplayRequestCount == 0:
         # Save replay buffer
         SaveReplay()
@@ -153,15 +163,17 @@ def UpdateInstantReplayRequestCount():
         # Switch to the instant replay OBS scene
         # Wait for ReplayDuration (2 second buffer time for transitions, adjust accordingly)
         # Return to the original OBS scene
+        Parent.AddCooldown(ScriptName, ScriptSettings.Command, ScriptSettings.Cooldown)
         ChangeSceneTimed(ScriptSettings.InstantReplayScene, int(ScriptSettings.ReplayDuration - 2), ScriptSettings.BaseScene)
 
     MostRecentRequest = datetime.now()
     return
 
 #---------------------------
-#   ParseUserHotkey (Maps the user's hotkey to a Virtual Key)
+# ParseUserHotkey (Maps the user's hotkey to a Virtual Key)
 #---------------------------
 def ParseUserHotkey(hotkey):
+    """ Converts user hotkey string into a virtual key. """
     # Default hotkey is F12
     if hotkey in VK.symbol:
         return VK.symbol.get(hotkey)
@@ -169,18 +181,19 @@ def ParseUserHotkey(hotkey):
         return getattr(VK, hotkey.replace(' ', '_').lower(), VK.f12)
 
 #---------------------------
-#   SaveReplay (Press the UserHotkey and wait for the replay to save)
+# SaveReplay (Press the UserHotkey and wait for the replay to save)
 #---------------------------
-def SaveReplay(delay = 5):
+def SaveReplay(delay = 5, alert = ScriptSettings.AlertChat):
+    """ Saves instant replay and alerts chat as needed. """
     StrikeKey(UserHotkey)
     time.sleep(delay)
 
-    if ScriptSettings.AlertChat:
+    if alert:
         Parent.SendStreamMessage("Need " + str(int(ScriptSettings.Threshold)) + " chatters to send " + ScriptSettings.Command + " to show an instant replay.")
 
 
 #---------------------------------------
-#   SLOBS Functions - created by ocgineer
+# SLOBS Functions - created by ocgineer
 #---------------------------------------
 def Logger(response):
     """ Logs response from bridge app in scripts logger. """
