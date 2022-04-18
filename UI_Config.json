@@ -33,14 +33,14 @@
     },
     "BaseScene": {
       "type": "textbox",
-      "value": "Destiny 2",
+      "value": "In Game",
       "label": "Base Scene",
       "tooltip": "The name of the original scene on OBS",
       "group": "OBS Settings"
     },
     "InstantReplayScene": {
       "type": "textbox",
-      "value": "Destiny 2 (Replay Display)",
+      "value": "In Game (Replay Display)",
       "label": "Instant Replay Scene",
       "tooltip": "The name of the instant replay scene on OBS",
       "group": "OBS Settings"
