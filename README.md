@@ -66,12 +66,12 @@ The hotkey you use to switch to your instant replay scene in OBS.
 
 ##### Base Scene
 The name of the scene you want to switch from.
-- **default**: Destiny 2, sorry I play a bad game 😕
+- **default**: In Game
 - Case sensitive!
 
 ##### Instant Replay Scene
 The name of the scene that you want to switch to.
-- **default**: Destiny 2 (Replay Display)
+- **default**: In Game (Replay Display)
 - Case sensitive!
 
 ##### Replay Duration
