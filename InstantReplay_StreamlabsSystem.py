@@ -56,7 +56,7 @@ def Init():
         os.makedirs(directory)
 
     # Load settings
-    SettingsFile = os.path.join(os.path.dirname(__file__), "Settings\settings.json")
+    SettingsFile = os.path.join(os.path.dirname(__file__), "Settings\\settings.json")
     ScriptSettings = MySettings(SettingsFile)
 
     # Initialize Instant Replay params
@@ -77,7 +77,8 @@ def Execute(data):
 
         # User is on cooldown
         if (Parent.IsOnUserCooldown(ScriptName, ScriptSettings.Command, data.User)):
-            Parent.SendStreamWhisper(data.User, "!replay Cooldown: " + str(Parent.GetUserCooldownDuration(ScriptName,ScriptSettings.Command,data.User)))
+            if (ScriptSettings.AlertChat):
+                Parent.SendStreamWhisper(data.User, "!replay Cooldown: " + str(Parent.GetUserCooldownDuration(ScriptName,ScriptSettings.Command,data.User)))
 
         # Command is on cooldown
         if (Parent.IsOnCooldown(ScriptName, ScriptSettings.Command)):
@@ -257,7 +258,7 @@ def SaveReplaySwap(scene, offset=None):
     else:
         Logger(os.popen("{0} save_replaybuffer_swap \"{1}\"".format(BridgeApp, scene)).read())
     return
-
+    
 def ThreadedFunction(command):
     Logger(os.popen("{0} {1}".format(BridgeApp, command)).read())
     return
