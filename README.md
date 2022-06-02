@@ -27,7 +27,7 @@ You'll want to use this script if you are looking for a way to allow your viewer
 
 
 ## Setup
-1. Set up an instant replay scene on OBS. [Here is a good resource](https://youtu.be/7fi7RI4y_6o) from Defrag on Youtube.
+1. Set up an instant replay scene on OBS. [Here is a good resource](https://youtu.be/7fi7RI4y_6o) from Defrag on Youtube. (You can ignore the bits about OBS Studio and the Lua plugin)
 2. Make sure you have a hotkey assigned that switches to your replay scene.
 3. In `Script Settings > OBS Settings` update the following:
     - `OBS Replay Hotkey`
