@@ -12,8 +12,8 @@
 | Discord | [Broadband#9214](https://www.discord.gg/Broadband)        |
 | Twitch  | [iBroadband](https://www.twitch.tv/iBroadband)            |
 | Twitter | [@iambroadband](https://www.twitter.com/iambroadband)     |
-| Youtube | [iBroadband](https://www.youtube.com/watch?v=dQw4w9WgXcQ) |
-| Github  | [iBroadband](https://github.com/ibroadband)               |
+| Youtube | [Broadband]([https://www.youtube.com/watch?v=dQw4w9WgXcQ](https://www.youtube.com/channel/UC6xvUC5NThwShk-wrhh01Mg)) |
+| Github  | [Broadband](https://github.com/broadband)                 |
 
 
 ## What Can It Do?
@@ -27,7 +27,7 @@ You'll want to use this script if you are looking for a way to allow your viewer
 
 
 ## Setup
-1. Set up an instant replay scene on OBS. [Here is a good resource](https://youtu.be/7fi7RI4y_6o?t=129) from Defrag on Youtube.
+1. Set up an instant replay scene on OBS. [Here is a good resource](https://youtu.be/7fi7RI4y_6o) from Defrag on Youtube.
 2. Make sure you have a hotkey assigned that switches to your replay scene.
 3. In `Script Settings > OBS Settings` update the following:
     - `OBS Replay Hotkey`
