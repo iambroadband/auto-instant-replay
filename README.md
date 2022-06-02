@@ -13,7 +13,7 @@
 | Twitch  | [iBroadband](https://www.twitch.tv/iBroadband)            |
 | Twitter | [@iambroadband](https://www.twitter.com/iambroadband)     |
 | Youtube | [Broadband](https://www.youtube.com/channel/UC6xvUC5NThwShk-wrhh01Mg) |
-| Github  | [Broadband](https://github.com/broadband)                 |
+| Github  | [Broadband](https://github.com/iambroadband)                 |
 
 
 ## What Can It Do?
